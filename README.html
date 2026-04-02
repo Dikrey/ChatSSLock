@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>ChatSSLock - Modern Responsive Chat App</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="chatsslock---modern-responsive-chat-app">ChatSSLock - Modern Responsive Chat App</h1>
+<p align="center">
+  <img src="https://api.dicebear.com/7.x/initials/svg?seed=ChatSSLock&backgroundColor=6366f1" width="120" height="120" alt="ChatSSLock Logo" style="border-radius: 24px; box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);" />
+</p>
+<p align="center">
+  <a href="https://github.com/Dikrey/ChatSSLock">
+    <img src="https://img.shields.io/badge/Version-2.0.0-6366f1?style=for-the-badge" alt="Version">
+  </a>
+  <img src="https://img.shields.io/badge/Security-E2E%20Encrypted-0fb981?style=for-the-badge" alt="Security">
+  <img src="https://img.shields.io/badge/Framework-React%20%2B%20Next.js-000000?style=for-the-badge" alt="Framework">
+</p>
+<hr>
+<p>React + Tailwind + Supabase chat app with neumorphic UI.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li>Modern glassmorphism/neumorphic chat UI (glow bubbles, shimmers)</li>
+<li>Fully responsive (mobile/desktop)</li>
+<li>Real-time messages, media (image/video/voice/location)</li>
+<li>CRUD (send/edit/delete/pin)</li>
+<li>Typing indicators, reactions ready</li>
+<li>Error toasts for send/upload/DB issues</li>
+</ul>
+<hr>
+<h2 id="-apa-itu-chatsslock">🌌 Apa itu ChatSSLock?</h2>
+<p><strong>ChatSSLock</strong> bukan sekadar aplikasi pengiriman pesan instan biasa; ia adalah sebuah manifestasi dari kebebasan digital dan kedaulatan privasi di era pengawasan massal. Dibangun di atas fondasi arsitektur <strong>Modern UI</strong> yang sangat estetik oleh tim <strong>Visualcodepo</strong>, ChatSSLock hadir sebagai solusi bagi mereka yang menuntut transparansi teknologi tanpa mengorbankan keindahan visual.</p>
+<p>Dalam ekosistem ChatSSLock, setiap transmisi data diperlakukan sebagai entitas suci. Kami menggabungkan kecepatan sinkronisasi <em>real-time</em> berbasis <strong>Supabase WebSockets</strong> dengan protokol keamanan berlapis yang memastikan bahwa hanya pengirim dan penerima sah yang memiliki kunci untuk membuka gerbang informasi. Dengan antarmuka yang dihiasi <em>soft gradients</em>, animasi fluid dari <strong>Framer Motion</strong>, dan tata letak minimalis, ChatSSLock memberikan pengalaman pengguna yang tenang, fokus, dan sepenuhnya aman.</p>
+<hr>
+<h2 id="-keunggulan-utama-core-pillars">⚡ Keunggulan Utama (Core Pillars)</h2>
+<h3 id="️-1-military-grade-privacy--encryption">🛡️ 1. Military-Grade Privacy &amp; Encryption</h3>
+<p>Setiap karakter yang Anda ketik, setiap citra yang Anda bagikan, dilindungi oleh algoritma enkripsi ujung-ke-ujung (E2E). Sistem kami tidak menyimpan jejak kunci di sisi server, memastikan bahwa percakapan Anda tetap menjadi milik Anda secara absolut.</p>
+<h3 id="️-2-one-time-view-protocol-ephemeral-media">👁️ 2. One-Time View Protocol (Ephemeral Media)</h3>
+<p>Fitur unggulan untuk berbagi data sensitif. Foto atau media yang dikirim dengan mode <strong>1x View</strong> akan terhapus secara otomatis dan permanen dari node jaringan segera setelah penerima melihatnya. Tidak ada residu data, tidak ada jejak digital.</p>
+<h3 id="-3-hyper-sync-realtime-engine">🚀 3. Hyper-Sync Realtime Engine</h3>
+<p>Menggunakan infrastruktur <em>relay nodes</em> global, ChatSSLock meminimalisir latensi hingga ke titik terendah. Pesan tersampaikan secara instan melalui jalur WebSocket yang dioptimalkan khusus untuk efisiensi bandwidth tanpa mengurangi integritas data.</p>
+<h3 id="-4-modern-aesthetic--cyber-islamic-visuals">🎨 4. Modern Aesthetic &amp; Cyber-Islamic Visuals</h3>
+<p>Desain yang adaptif dengan sentuhan <em>Cyber-Islamic Aesthetic</em>—penggabungan antara geometri modern dan fungsionalitas futuristik. Antarmuka yang responsif memastikan kenyamanan penggunaan baik di perangkat mobile maupun desktop dengan transisi yang mulus.</p>
+<h3 id="-5-decentralized-identity-unique-id">🧬 5. Decentralized Identity (Unique ID)</h3>
+<p>Identitas Anda tidak terikat pada nomor telepon atau data pribadi yang invasif. ChatSSLock menggunakan sistem <strong>Unique ID</strong> berbasis node yang memungkinkan Anda terhubung secara anonim namun tetap terverifikasi dalam jaringan aman kami.</p>
+<hr>
+<h2 id="️-stack-teknologi">🛠️ Stack Teknologi</h2>
+<p>Proyek ini dibangun dengan presisi menggunakan ekosistem pengembangan web modern:</p>
+<ul>
+<li><strong>Frontend:</strong> React 18 &amp; Next.js (App Router)</li>
+<li><strong>Styling:</strong> Tailwind CSS (Custom Dark Theme &amp; Fluid Gradients)</li>
+<li><strong>Animations:</strong> Framer Motion (Orchestration &amp; Gestures)</li>
+<li><strong>Backend/Database:</strong> Supabase (PostgreSQL + Realtime Channel)</li>
+<li><strong>Storage:</strong> Supabase Storage (Encrypted Buckets)</li>
+<li><strong>State Management:</strong> React Context API &amp; Custom Hooks</li>
+<li><strong>Icons:</strong> Lucide React</li>
+</ul>
+<hr>
+<h2 id="-instalasi-lokal">🚀 Instalasi Lokal</h2>
+<pre><code class="language-bash"><span class="hljs-comment"># Clone repositori</span>
+git <span class="hljs-built_in">clone</span> [https://github.com/Dikrey/ChatSSLock.git](https://github.com/Dikrey/ChatSSLock.git)
+
+<span class="hljs-comment"># Masuk ke direktori</span>
+<span class="hljs-built_in">cd</span> ChatSSLock
+
+<span class="hljs-comment"># Install dependensi</span>
+npm install
+
+<span class="hljs-comment"># Setup Environment Variables (.env)</span>
+<span class="hljs-comment"># VITE_SUPABASE_URL=your_project_url</span>
+<span class="hljs-comment"># VITE_SUPABASE_ANON_KEY=your_anon_key</span>
+
+<span class="hljs-comment"># Jalankan aplikasi</span>
+npm run dev
+</code></pre>
+<hr>
+<h2 id="-kontributor--tim-pengembangan">👨‍💻 Kontributor &amp; Tim Pengembangan</h2>
+<p>Sistem ini dirancang dan diimplementasikan dengan penuh dedikasi oleh:</p>
+<ul>
+<li><strong>Dikrey</strong> (Lead Developer / Software Architect)</li>
+<li><strong>Visualcodepo Team</strong> (Design &amp; UI/UX Research)</li>
+</ul>
+<hr>
+<h2 id="-lisensi">📄 Lisensi</h2>
+<p>Didistribusikan di bawah lisensi <strong>MIT</strong>. Lihat <code>LICENSE</code> untuk informasi lebih lanjut.</p>
+<hr>
+<p>&lt;p align=&quot;center&quot;&gt;
+&lt;i&gt;&quot;Privacy is not an option, it is a fundamental right. Built with passion by Raihan_official0307 × Visualcodepo.&quot;&lt;/i&gt;
+&lt;/p&gt;</p>
+<pre><code></code></pre>
+
+            
+            
+        </body>
+        </html>
