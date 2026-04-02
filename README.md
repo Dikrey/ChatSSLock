@@ -104,7 +104,7 @@ Sistem ini dirancang dan diimplementasikan dengan penuh dedikasi oleh:
 Didistribusikan di bawah lisensi **MIT**. Lihat `LICENSE` untuk informasi lebih lanjut.
 
 -----
-
+```
 \<p align="center"\>
 \<i\>"Privacy is not an option, it is a fundamental right. Built with passion by Raihan\_official0307 × Visualcodepo."\</i\>
 \</p\>
