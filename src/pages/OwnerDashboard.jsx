@@ -19,11 +19,11 @@ const OwnerDashboard = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterMode, setFilterMode] = useState('all'); // NEW FEATURE: Quick Filters
+  const [filterMode, setFilterMode] = useState('all'); 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [showDeleteAllModal, setShowDeleteAllModal] = useState(false);
   const [deletingAllMessages, setDeletingAllMessages] = useState(false);
-  const [time, setTime] = useState(''); // NEW FEATURE: Live Clock
+  const [time, setTime] = useState(''); 
 
   // Live Clock Effect
   useEffect(() => {
@@ -149,7 +149,7 @@ const OwnerDashboard = () => {
     setUsers(users.map(u => u.id === userId ? { ...u, showPassword: !u.showPassword } : u));
   };
 
-  // NEW FEATURE: Added Filter Logic
+  // Filter Logic
   const filteredUsers = users.filter(u => {
     const matchesSearch = u.username.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           u.unique_id.toLowerCase().includes(searchQuery.toLowerCase());
@@ -192,10 +192,11 @@ const OwnerDashboard = () => {
   if (!isOwner) return null;
 
   return (
-    <div className="min-h-screen bg-[#030308] text-slate-100 font-sans selection:bg-indigo-500/30 overflow-x-hidden pb-20">
+    // PERBAIKAN: Mengubah root div agar mengelola scroll secara internal (fixed viewport height + overflow-auto)
+    <div className="relative w-full h-[100dvh] bg-[#030308] text-slate-100 font-sans selection:bg-indigo-500/30 overflow-y-auto overflow-x-hidden">
       
       {/* Top System Bar (Cyber Vibe) */}
-      <div className="hidden md:flex w-full bg-black/60 border-b border-white/5 py-1 px-4 justify-between items-center z-50 text-[10px] text-indigo-300/70 font-mono tracking-widest uppercase">
+      <div className="hidden md:flex sticky top-0 z-50 w-full bg-black/60 border-b border-white/5 py-1 px-4 justify-between items-center text-[10px] text-indigo-300/70 font-mono tracking-widest uppercase backdrop-blur-xl">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5"><TerminalSquare size={12} className="text-indigo-500" /> ADMIN.KERNEL.V2</span>
           <span className="flex items-center gap-1.5"><Cpu size={12} className="text-emerald-500" /> SYSTEM NORMAL</span>
@@ -210,8 +211,8 @@ const OwnerDashboard = () => {
       <div className="fixed top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-700/10 blur-[150px] pointer-events-none z-0 animate-pulse-slow" />
       <div className="fixed bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-purple-700/10 blur-[150px] pointer-events-none z-0" />
 
-      {/* Header NavBar */}
-      <div className="sticky top-0 z-40 bg-[#0a0a0f]/80 backdrop-blur-2xl border-b border-white/5 shadow-2xl">
+      {/* Header NavBar - Sticky untuk mobile juga sekarang */}
+      <div className="sticky top-0 md:top-0 z-40 bg-[#0a0a0f]/80 backdrop-blur-2xl border-b border-white/5 shadow-2xl">
         <div className="w-full max-w-[1600px] mx-auto px-4 md:px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-4 w-full md:w-auto">
              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.4)] flex-shrink-0 relative">
@@ -242,6 +243,7 @@ const OwnerDashboard = () => {
         </div>
       </div>
 
+      {/* Main Content Wrapper - Tidak perlu pb-20 berlebihan karena scroll internal */}
       <div className="max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 relative z-10 flex flex-col lg:flex-row gap-6 lg:gap-8">
         
         {/* Main Content Area */}
@@ -250,7 +252,7 @@ const OwnerDashboard = () => {
           {/* Dashboard Stats & Chart Grid */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             
-            {/* Stat Cards (Left side on desktop) */}
+            {/* Stat Cards */}
             <div className="md:col-span-8 grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-6">
               {[
                 { label: 'Total Registrations', value: users.length, icon: Users, color: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/20' },
@@ -274,7 +276,7 @@ const OwnerDashboard = () => {
               ))}
             </div>
 
-            {/* NEW FEATURE: Visual Analytics Chart */}
+            {/* Visual Analytics Chart */}
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }} 
               className="md:col-span-4 bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-3xl p-6 shadow-xl flex flex-col justify-between">
               <h3 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest mb-6">System Distribution</h3>
@@ -314,7 +316,7 @@ const OwnerDashboard = () => {
               </div>
               
               <div className="flex flex-col md:flex-row gap-4 w-full xl:w-auto">
-                {/* NEW FEATURE: Filter Chips */}
+                {/* Filter Chips */}
                 <div className="flex bg-black/40 p-1.5 rounded-xl border border-white/10 overflow-x-auto custom-scrollbar">
                   {['all', 'online', 'banned', 'admin'].map((f) => (
                     <button 
@@ -336,7 +338,7 @@ const OwnerDashboard = () => {
               </div>
             </div>
             
-            {/* Desktop Table View (Scrollable horizontally) */}
+            {/* Desktop Table View */}
             <div className="overflow-x-auto w-full px-2 custom-scrollbar pb-4 hidden md:block">
               <table className="w-full text-left border-separate border-spacing-y-2 min-w-[900px] px-4">
                 <thead>
@@ -419,7 +421,7 @@ const OwnerDashboard = () => {
               </table>
             </div>
 
-            {/* Mobile Card View (Displays instead of table on small screens) */}
+            {/* Mobile Card View */}
             <div className="md:hidden flex flex-col gap-4 p-4">
                {loading ? (
                  <div className="flex justify-center p-10"><div className="w-8 h-8 border-2 border-white/10 border-t-indigo-500 rounded-full animate-spin"/></div>
@@ -474,9 +476,9 @@ const OwnerDashboard = () => {
           </motion.div>
         </div>
 
-        {/* Global Accounts Sidebar (Sticky on desktop, flows naturally on mobile) */}
+        {/* Global Accounts Sidebar */}
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}
-          className="w-full lg:w-[350px] flex-shrink-0 bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-3xl border border-white/5 shadow-2xl overflow-hidden flex flex-col h-[500px] lg:h-[calc(100vh-140px)] lg:sticky lg:top-28">
+          className="w-full lg:w-[350px] flex-shrink-0 bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-3xl border border-white/5 shadow-2xl overflow-hidden flex flex-col h-[500px] lg:h-auto lg:sticky lg:top-28">
            
            <div className="p-6 border-b border-white/5 flex items-center gap-4 relative overflow-hidden bg-gradient-to-br from-indigo-500/10 to-transparent">
              <div className="absolute -top-10 -right-10 opacity-10 rotate-12">

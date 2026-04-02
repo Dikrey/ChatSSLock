@@ -7,7 +7,7 @@ const Banned = () => {
   const { logout } = useAuth();
   const [userIp, setUserIp] = useState('Loading...');
 
-  // Fetch User IP on component mount
+
   useEffect(() => {
     fetch('https://api.ipify.org?format=json')
       .then(response => response.json())
@@ -18,7 +18,7 @@ const Banned = () => {
       });
   }, []);
 
-  // Animation variants
+
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.8 },
     visible: {
@@ -44,7 +44,7 @@ const Banned = () => {
     transition: {
       duration: 0.4,
       repeat: Infinity,
-      repeatDelay: 3.5, // Glitch effect every 3.5 seconds
+      repeatDelay: 3.5, 
       ease: "linear"
     }
   };
@@ -52,21 +52,17 @@ const Banned = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#050509] p-4 relative overflow-hidden font-sans selection:bg-red-500/30">
       
-      {/* Background Tech Layer (Grid pattern) */}
+ 
       <div className="absolute inset-0 opacity-[0.03]" style={{ 
         backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)',
         backgroundSize: '40px 40px'
       }} />
 
-      {/* Animated background glows */}
+
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] bg-red-900/20 blur-[150px] rounded-full animate-pulse-slow" />
-      
-      {/* MAIN CIRCULAR CONTAINER
-        Menggunakan aspect-square dan rounded-full agar selalu bulat sempurna
-      */}
       <div className="relative w-[95vw] max-w-[600px] aspect-square flex items-center justify-center">
         
-        {/* Outer Rotating Rings */}
+   
         <motion.div 
           animate={{ rotate: 360 }}
           transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
@@ -78,20 +74,18 @@ const Banned = () => {
           className="absolute inset-2 sm:inset-4 rounded-full border border-red-800/30 border-t-red-500/60 border-l-red-500/30"
         />
 
-        {/* Inner Card (The actual content container) */}
+
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="absolute inset-5 sm:inset-8 bg-[#0a0a12]/85 backdrop-blur-2xl rounded-full border border-red-950/80 shadow-2xl shadow-black flex flex-col items-center justify-center p-6 sm:p-12 text-center overflow-hidden"
         >
-          {/* Radial Red Glow di dalam lingkaran */}
+  
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(220,38,38,0.08)_0%,transparent_60%)] pointer-events-none" />
-
-          {/* Content Wrapper ditaruh di tengah lingkaran */}
           <div className="relative z-10 w-full max-w-[320px] flex flex-col items-center">
             
-            {/* Icon */}
+          
             <motion.div variants={itemVariants} className="relative mb-6 sm:mb-8">
               <motion.div
                 animate={glitchAnimation}
@@ -104,7 +98,7 @@ const Banned = () => {
               </motion.div>
             </motion.div>
 
-            {/* Title */}
+          
             <motion.h1
               variants={itemVariants}
               className="text-3xl sm:text-4xl font-black bg-gradient-to-b from-white via-red-200 to-red-600 bg-clip-text text-transparent mb-3 tracking-tighter uppercase"
@@ -112,7 +106,6 @@ const Banned = () => {
               Account Banned
             </motion.h1>
 
-            {/* Message */}
             <motion.p
               variants={itemVariants}
               className="text-xs sm:text-sm text-slate-300/80 leading-relaxed mb-6 font-light px-4"
@@ -121,7 +114,6 @@ const Banned = () => {
               Immediate action is required to review your status.
             </motion.p>
 
-            {/* Technical Info Block (IP) */}
             <motion.div 
               variants={itemVariants}
               className="bg-black/50 rounded-lg px-4 py-2 border border-red-950 inline-flex items-center gap-2 mb-6 sm:mb-8 shadow-inner"
@@ -133,10 +125,9 @@ const Banned = () => {
               </span>
             </motion.div>
             
-            {/* Buttons Group (Ditumpuk agar pas dan rapi di dasar lingkaran) */}
+
             <motion.div variants={itemVariants} className="flex flex-col w-full gap-3 px-2 sm:px-0">
-              
-              {/* Contact Link */}
+            
               <a
                 href="https://talk.visualcodepo.my.id"
                 target="_blank"
@@ -159,7 +150,7 @@ const Banned = () => {
                 <ArrowRight size={16} className="text-slate-600 group-hover:text-red-400 group-hover:translate-x-1 transition-all" />
               </a>
 
-              {/* Sign Out Button */}
+             
               <button
                 onClick={logout}
                 className="w-full py-3 sm:py-4 bg-transparent border border-white/5 hover:border-white/10 hover:bg-white/5 rounded-xl text-slate-400 hover:text-white text-xs sm:text-sm font-bold tracking-widest uppercase cursor-pointer flex justify-center items-center gap-2 transition-all duration-300"

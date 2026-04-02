@@ -488,16 +488,18 @@ const Chat = () => {
         
         {/* Mobile Menu Button - Only shown on Home screen now */}
         {isMobile && !showSidebar && !currentConversation && (
-           <div className="absolute top-5 left-4 z-[55]">
+           <div className="absolute top-4 left-4 z-[55]">
              <button
                onClick={() => setShowSidebar(true)}
-               className="flex items-center gap-2 h-10 px-3 bg-black/60 backdrop-blur-3xl border border-white/15 rounded-xl text-white shadow-2xl hover:bg-white/10 transition-colors"
+               className="flex items-center gap-2 h-13 px-3 bg-black/60 backdrop-blur-3xl border border-white/15 rounded-xl text-white shadow-2xl hover:bg-white/10 transition-colors"
              >
-               <Menu size={20} />
+               <Menu size={25} />
                <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Menu</span>
              </button>
            </div>
         )}
+
+
 
         {currentConversation ? (
           <div className="flex flex-col h-full w-full bg-[#0a0a12] relative z-10 overflow-hidden">
@@ -514,27 +516,52 @@ const Chat = () => {
             </div>
 
             {/* Chat Header */}
-            <div className="px-3 md:px-5 py-2.5 bg-[#0a0a10]/90 backdrop-blur-xl border-b border-indigo-500/10 flex items-center justify-between gap-2 z-20 shadow-md">
-              <div className="flex items-center gap-2">
-                  <button onClick={() => { selectConversation(null); if (isMobile) setShowSidebar(false); }} className="w-9 h-9 bg-white/5 border border-white/5 hover:bg-white/10 rounded-xl flex items-center justify-center transition-all text-slate-300 flex-shrink-0"><ArrowLeft size={18} /></button>
-                  <div className="flex items-center gap-2 cursor-pointer group">
-                    <div className="relative flex-shrink-0">
-                      <img src={currentConversation.otherUser?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${currentConversation.otherUser?.username}`} alt={currentConversation.otherUser?.username} className="w-9 h-9 md:w-10 md:h-10 rounded-xl object-cover ring-1 ring-white/10 group-hover:ring-indigo-500/50 transition-all" />
-                      <div className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-[#0a0a12] ${currentConversation.otherUser?.is_online ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-slate-500'}`} />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="font-bold text-slate-100 text-[13px] md:text-[14px] truncate max-w-[120px] sm:max-w-xs">{currentConversation.otherUser?.username}</div>
-                      <div className={`text-[9px] font-bold uppercase tracking-widest mt-0.5 ${currentConversation.otherUser?.is_online ? 'text-emerald-400' : 'text-slate-500'}`}>{currentConversation.otherUser?.is_online ? '● Online' : 'Offline'}</div>
-                    </div>
-                  </div>
-              </div>
-              <div className="flex items-center gap-1">
-                <button className="w-8 h-8 md:w-9 md:h-9 bg-indigo-500/5 hover:bg-indigo-500/20 border border-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 transition-colors"><Phone size={14} /></button>
-                <button className="w-8 h-8 md:w-9 md:h-9 bg-indigo-500/5 hover:bg-indigo-500/20 border border-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 transition-colors"><VideoIcon size={14} /></button>
-                <button onClick={() => { selectConversation(null); if (isMobile) setShowSidebar(false); }} className="w-8 h-8 bg-white/5 hover:bg-red-500/20 rounded-xl md:hidden flex items-center justify-center text-slate-400 hover:text-red-400 transition-colors" title="Tutup"><X size={14} /></button>
-              </div>
-            </div>
+            {/* Chat Header - Versi Turun Maksimal untuk Mobile */}
+<div className="px-3 md:px-5 pt-16 pb-4 md:py-3 bg-[#0a0a10]/95 backdrop-blur-xl border-b border-indigo-500/10 flex items-center justify-between gap-2 z-20 shadow-md sticky top-0">
+  
+  <div className="flex items-center gap-2 mt-3 md:mt-0"> {/* mt-2 untuk tambahan jarak internal */}
+      {/* Tombol Back */}
+      <button 
+        onClick={() => { selectConversation(null); if (isMobile) setShowSidebar(false); }} 
+        className="w-10 h-10 bg-white/5 border border-white/5 hover:bg-white/10 rounded-xl flex items-center justify-center transition-all text-slate-300 flex-shrink-0"
+      >
+        <ArrowLeft size={20} />
+      </button>
 
+      {/* Profile Info */}
+      <div className="flex items-center gap-3 cursor-pointer group">
+        <div className="relative flex-shrink-0">
+          <img 
+            src={currentConversation.otherUser?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${currentConversation.otherUser?.username}`} 
+            alt={currentConversation.otherUser?.username} 
+            className="w-11 h-11 md:w-10 md:h-10 rounded-xl object-cover ring-1 ring-white/10 group-hover:ring-indigo-500/50 transition-all shadow-lg" 
+          />
+          <div className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-[#0a0a12] ${currentConversation.otherUser?.is_online ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]' : 'bg-slate-500'}`} />
+        </div>
+        <div className="min-w-0">
+          <div className="font-extrabold text-slate-100 text-[15px] md:text-[14px] truncate max-w-[140px] leading-tight">
+            {currentConversation.otherUser?.username}
+          </div>
+          <div className={`text-[10px] font-bold uppercase tracking-widest mt-1 ${currentConversation.otherUser?.is_online ? 'text-emerald-400' : 'text-slate-500'}`}>
+            {currentConversation.otherUser?.is_online ? '● Online' : 'Offline'}
+          </div>
+        </div>
+      </div>
+  </div>
+
+  {/* Action Buttons */}
+  <div className="flex items-center gap-1.5 mt-2 md:mt-0">
+    <button className="w-10 h-10 bg-indigo-500/5 hover:bg-indigo-500/20 border border-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 transition-colors">
+      <Phone size={16} />
+    </button>
+    <button className="w-10 h-10 bg-indigo-500/5 hover:bg-indigo-500/20 border border-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 transition-colors">
+      <VideoIcon size={16} />
+    </button>
+    <button className="w-10 h-10 bg-indigo-500/5 hover:bg-indigo-500/20 border border-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400 transition-colors">
+      <MoreVertical size={16} />
+    </button>
+  </div>
+</div>
             {/* Messages Output */}
             <div className="flex-1 overflow-y-auto px-3 md:px-8 py-4 flex flex-col gap-3 relative z-10 custom-scrollbar scroll-smooth">
               
@@ -663,7 +690,7 @@ const Chat = () => {
           </div>
         ) : (
           // HOME SCREEN / EMPTY STATE
-          <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-6 relative z-10 bg-[#050508] w-full h-[100dvh] overflow-hidden overflow-y-auto custom-scrollbar pt-55 md:pt-0">
+          <div className="flex-1 flex flex-col items-center justify-start md:justify-center p-4 md:p-6 relative z-10 bg-[#050508] w-full min-h-[100dvh] overflow-y-auto custom-scrollbar pt-28 pb-10 md:pt-0">
 
             {/* Elaborate Animated Background */}
             <div className="fixed inset-0 pointer-events-none z-0 opacity-40">
@@ -684,35 +711,87 @@ const Chat = () => {
             <motion.div initial={{ scale: 0.95, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} transition={{ type: 'spring', damping: 25 }} className="w-full max-w-[1000px] flex flex-col md:flex-row items-center justify-center gap-6 lg:gap-10 relative z-10 my-auto">
                
                {/* Left Intro Card */}
-               <div className="flex-1 w-full backdrop-blur-2xl bg-[#0a0a0f]/80 border border-white/5 rounded-[32px] p-6 lg:p-10 shadow-2xl relative overflow-hidden group">
-                  <div className="absolute -top-10 -right-10 opacity-5 pointer-events-none">
-                     <Globe className="w-64 h-64 text-indigo-500 animate-[spin_60s_linear_infinite]" />
-                  </div>
+<div className="flex-1 w-full backdrop-blur-2xl bg-[#0a0a0f]/80 border border-white/5 rounded-[32px] p-6 lg:p-10 shadow-2xl relative overflow-hidden group">
+  <div className="absolute -top-10 -right-10 opacity-5 pointer-events-none">
+    <Globe className="w-64 h-64 text-indigo-500 animate-[spin_60s_linear_infinite]" />
+  </div>
 
-                  <div className="flex justify-start mb-6">
-                    <div className="w-16 h-16 bg-white/[0.03] rounded-2xl flex items-center justify-center relative shadow-inner border border-white/5">
-                      <Shield size={28} className="text-indigo-400 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
-                      <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] px-2 py-0.5 rounded shadow-lg uppercase font-black tracking-widest border border-white/20">V 2.0</div>
-                    </div>
-                  </div>
+  <div className="flex justify-between items-start mb-6">
+    <div className="flex items-center gap-4">
+      {/* Icon Shield */}
+      <div className="w-23 h-16 bg-white/[0.03] rounded-2xl flex items-center justify-center relative shadow-inner border border-white/5">
+        <Shield size={28} className="text-indigo-400 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
+        <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] px-2 py-0.5 rounded shadow-lg uppercase font-black tracking-widest border border-white/20">V 2.0</div>
+      </div>
+
+
+<button 
+  onClick={() => {
+  
+    console.log("Re-initializing Secure Node...");
+    window.location.href = window.location.pathname + window.location.search;
+  }} 
+  className="group/refresh w-25 h-12 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400 transition-all active:scale-90 shadow-lg shadow-indigo-500/5"
+  title="Hard Refresh Node"
+>
+  <RefreshCw size={20} className="group-hover/refresh:rotate-180 transition-transform duration-700 ease-in-out" />Refresh
+        
+      </button>
+    </div>
+  </div>
+  
+  <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-3 tracking-tight text-white leading-tight">
+    Global Encrypted<br/>
+    <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-emerald-400">Secure Network</span>
+  </h2>
+  
+  <p className="text-slate-400 text-[13px] md:text-[14px] leading-relaxed mb-8 font-medium">
+    Bypass conventional limits. Connect anonymously with users worldwide through military-grade secured nodes.
+  </p>
+  
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    {/* Grid Content Tetap Sama... */}
+    <div className="bg-[#12121e]/80 border border-indigo-500/10 p-4 rounded-xl flex items-start gap-3 hover:bg-[#1a1a2e] transition-colors">
+        <Lock size={16} className="text-emerald-400 mt-0.5 shrink-0"/>
+        <div><div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">True E2E</div><div className="text-[10px] text-slate-500 font-medium leading-relaxed">No logs. No traces. Total anonymity for your data.</div></div>
+    </div>
+    <div className="bg-[#12121e]/80 border border-indigo-500/10 p-4 rounded-xl flex items-center justify-between gap-4 hover:bg-[#1a1a2e] transition-all group/card shadow-lg shadow-black/20">
+    <div className="flex items-start gap-3">
+        <div className="relative shrink-0 mt-1">
+            <Menu size={16} className="text-indigo-400 group-hover/card:scale-110 transition-transform relative z-10"/>
+            <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-full animate-pulse" />
+        </div>
+        <div>
+            <div className="text-[11px] font-black text-white uppercase tracking-[0.1em] mb-1 flex items-center gap-2">
+                UI Recovery Assistant
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></span>
+            </div>
+            <div className="text-[10px] text-slate-400 font-bold leading-relaxed max-w-[200px] md:max-w-none">
+                Jika <span className="text-indigo-300">Tombol Menu</span> menghilang pada tampilan mobile, silakan tekan tombol refresh untuk memulihkan navigasi.
+            </div>
+        </div>
+    </div>
+
+    {/* TOMBOL REFRESH SEBAGAI FIX MENU */}
+    <button 
+        onClick={() => window.location.reload()} 
+        className="flex-shrink-0 w-12 h-12 bg-indigo-600/10 hover:bg-indigo-600/30 border border-indigo-500/30 rounded-xl flex flex-col items-center justify-center text-indigo-400 transition-all active:scale-75 shadow-xl group/btn"
+        title="Restore Navigation Menu"
+    >
+        <RefreshCw size={18} className="group-hover/btn:rotate-180 transition-transform duration-700 ease-in-out" />
+        <span className="text-[7px] font-black mt-1 uppercase tracking-tighter text-indigo-300">Reload</span>
+    </button>
+</div>
+    <div className="bg-[#12121e]/80 border border-rose-500/10 p-4 rounded-xl flex items-start gap-3 hover:bg-[#1a1a2e] transition-colors">
+        <EyeOff size={16} className="text-rose-400 mt-0.5 shrink-0"/>
+        <div><div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">1x View Protocol</div><div className="text-[10px] text-slate-500 font-medium leading-relaxed">Photos vanish from servers after being viewed once.</div></div>
+    </div>
+    <div className="bg-[#12121e]/80 border border-amber-500/10 p-4 rounded-xl flex items-start gap-3 sm:col-span-2 hover:bg-[#1a1a2e] transition-colors">
+        <Zap size={16} className="text-amber-400 mt-0.5 shrink-0"/>
+        <div><div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">Hyper Syne Sync</div><div className="text-[10px] text-slate-500 font-medium leading-relaxed">Message latency reduced by realtime WebSocket tunneling across global regions.</div></div>
+    </div>
+  </div>
                   
-                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-3 tracking-tight text-white leading-tight">Global Encrypted<br/><span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-emerald-400">Secure Network</span></h2>
-                  <p className="text-slate-400 text-[13px] md:text-[14px] leading-relaxed mb-8 font-medium">Bypass conventional limits. Connect anonymously with users worldwide through military-grade secured nodes.</p>
-                  
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="bg-[#12121e]/80 border border-indigo-500/10 p-4 rounded-xl flex items-start gap-3 hover:bg-[#1a1a2e] transition-colors">
-                       <Lock size={16} className="text-emerald-400 mt-0.5 shrink-0"/>
-                       <div><div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">True E2E</div><div className="text-[10px] text-slate-500 font-medium leading-relaxed">No logs. No traces. Total anonymity for your data.</div></div>
-                    </div>
-                    <div className="bg-[#12121e]/80 border border-rose-500/10 p-4 rounded-xl flex items-start gap-3 hover:bg-[#1a1a2e] transition-colors">
-                       <EyeOff size={16} className="text-rose-400 mt-0.5 shrink-0"/>
-                       <div><div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">1x View Protocol</div><div className="text-[10px] text-slate-500 font-medium leading-relaxed">Photos vanish from servers after being viewed once.</div></div>
-                    </div>
-                    <div className="bg-[#12121e]/80 border border-amber-500/10 p-4 rounded-xl flex items-start gap-3 sm:col-span-2 hover:bg-[#1a1a2e] transition-colors">
-                       <Zap size={16} className="text-amber-400 mt-0.5 shrink-0"/>
-                       <div><div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">Hyper Syne Sync</div><div className="text-[10px] text-slate-500 font-medium leading-relaxed">Message latency reduced by realtime WebSocket tunneling across global regions.</div></div>
-                    </div>
-                  </div>
 
                   {/* NEW: Interactive Status Widget */}
                   <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 flex items-center justify-between">
@@ -889,6 +968,34 @@ const Chat = () => {
   );
 };
 
+<style>{`
+  /* Pastikan container utama menghormati area aman HP */
+  :root {
+    --sat: env(safe-area-inset-top);
+  }
+
+  .chat-header-container {
+    /* Padding-top dinamis: Safe area + manual offset */
+    padding-top: calc(var(--sat, 0px) + 20px) !important;
+  }
+
+  @media (max-width: 768px) {
+    .chat-header-container {
+      padding-top: calc(var(--sat, 0px) + 40px) !important;
+      min-height: 120px;
+    }
+  }
+
+  /* Perbaikan agar layout tidak melompat saat keyboard muncul */
+  .main-viewport {
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+`}</style>
+
 const VoiceMessage = ({ mediaUrl }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
@@ -929,5 +1036,7 @@ const Pause = ({ size, className }) => (
 const Play = ({ size, className }) => (
    <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}><path d="M5 3l14 9-14 9V3z"/></svg>
 )
+
+
 
 export default Chat;

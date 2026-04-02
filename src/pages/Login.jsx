@@ -20,7 +20,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 const Login = () => {
-  // === EXISTING LOGIC (TIDAK DIUBAH) ===
+
   const [uniqueId, setUniqueId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -50,14 +50,11 @@ const Login = () => {
 
     setLoading(false);
   };
-  // ======================================
 
-  // === NEW PRO FEATURES STATES ===
   const [time, setTime] = useState("");
   const [battery, setBattery] = useState("100%");
   const [showSignUpModal, setShowSignUpModal] = useState(false);
 
-  // System Time Effect
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -68,7 +65,6 @@ const Login = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Battery Status Effect
   useEffect(() => {
     if ('getBattery' in navigator) {
       navigator.getBattery().then((batt) => {
@@ -82,7 +78,7 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#030305] p-4 relative overflow-hidden font-sans selection:bg-indigo-500/30">
       
-      {/* 1. TOP SYSTEM BAR (Cyber/OS Vibe) */}
+
       <div className="absolute top-0 left-0 w-full bg-black/40 backdrop-blur-md border-b border-white/5 py-1.5 px-4 flex justify-between items-center z-50 text-[10px] sm:text-xs text-indigo-200/70 font-mono tracking-widest uppercase">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1.5"><TerminalSquare size={12} className="text-indigo-400" /> SYS.LOGIN.01</span>
@@ -95,22 +91,21 @@ const Login = () => {
         </div>
       </div>
 
-      {/* 2. BACKGROUND ANIMATIONS (Modern Grid & Orbs) */}
+
       <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
       <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] bg-indigo-900/20 blur-[150px] rounded-full animate-rotate" />
       <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] bg-purple-900/20 blur-[150px] rounded-full animate-rotate-reverse" />
 
-      {/* 3. MAIN LOGIN CARD */}
+     
       <motion.div
         initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.7, type: "spring", stiffness: 100 }}
         className="w-full max-w-[420px] bg-[#0a0a0f]/80 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border border-white/10 shadow-[0_0_50px_rgba(79,70,229,0.15)] relative z-10"
       >
-        {/* Top Accent Line */}
+     
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[1px] bg-gradient-to-r from-transparent via-indigo-500 to-transparent shadow-[0_0_15px_rgba(99,102,241,0.8)]" />
 
-        {/* Security Badge */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -144,7 +139,7 @@ const Login = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Unique ID Input */}
+       
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 }}>
             <label className="block text-[10px] font-bold text-indigo-300/70 mb-2 tracking-widest uppercase flex items-center justify-between">
               <span>Secure ID</span>
@@ -164,7 +159,7 @@ const Login = () => {
             </div>
           </motion.div>
 
-          {/* Password Input */}
+    
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
             <label className="block text-[10px] font-bold text-indigo-300/70 mb-2 tracking-widest uppercase flex items-center justify-between">
               <span>Passkey</span>
@@ -191,7 +186,7 @@ const Login = () => {
             </div>
           </motion.div>
 
-          {/* Error Message */}
+       
           <AnimatePresence>
             {error && (
               <motion.div
@@ -206,16 +201,15 @@ const Login = () => {
             )}
           </AnimatePresence>
 
-          {/* Buttons Group */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="space-y-4 pt-2">
             
-            {/* Login Button */}
+        
             <button
               type="submit"
               disabled={loading}
               className="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 border-none rounded-xl text-white text-sm font-bold tracking-widest uppercase cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
             >
-              {/* Shine effect */}
+            
               <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-shine" />
               
               {loading ? (
@@ -228,7 +222,7 @@ const Login = () => {
               )}
             </button>
 
-            {/* Request Account Button */}
+          
             <button
               type="button"
               onClick={() => setShowSignUpModal(true)}
@@ -240,7 +234,7 @@ const Login = () => {
         </form>
       </motion.div>
 
-      {/* 4. SIGN UP PROMPT MODAL (Modern alternative to standard alert) */}
+
       <AnimatePresence>
         {showSignUpModal && (
           <motion.div
@@ -287,7 +281,6 @@ const Login = () => {
         )}
       </AnimatePresence>
 
-      {/* STYLES & ANIMATIONS */}
       <style>{`
         @keyframes rotate {
           from { transform: rotate(0deg); }

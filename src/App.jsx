@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Chat from './pages/Chat';
 import Banned from './pages/Banned';
 import OwnerDashboard from './pages/OwnerDashboard';
+import NotFound from './pages/NotFound';
 import './index.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -55,7 +56,7 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-      <Route path="*" element={<Navigate to="/" />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
