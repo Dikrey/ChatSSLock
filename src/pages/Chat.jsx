@@ -122,8 +122,10 @@ const Chat = () => {
     const fetchGlobalUsers = async () => {
       const res = await getAllUsers();
       if (res.success) {
-        const others = res.users.filter(u => u.id !== user?.id);
-        const latest = others.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 15);
+        const others = res.users.filter((u) => u.id !== user?.id);
+        const latest = others
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 15);
         setGlobalUsers(latest);
       }
       setLoadingGlobal(false);
@@ -132,9 +134,17 @@ const Chat = () => {
     fetchGlobalUsers();
 
     const channel = supabase
-      .channel('global-relay-nodes')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'users' }, () => fetchGlobalUsers())
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'users' }, () => fetchGlobalUsers())
+      .channel("global-relay-nodes")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "users" },
+        () => fetchGlobalUsers(),
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "users" },
+        () => fetchGlobalUsers(),
+      )
       .subscribe();
 
     return () => supabase.removeChannel(channel);
@@ -170,13 +180,11 @@ const Chat = () => {
     return format(msgDate, "MMM d");
   };
 
-
   const handleCopy = (text, id) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
-
 
   const renderTextWithLinks = (text) => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -251,10 +259,15 @@ const Chat = () => {
         async (position) => {
           const { latitude, longitude } = position.coords;
           const msg = `📍 Lokasi Saya:\nhttps://www.google.com/maps?q=${latitude},${longitude}`;
-          
+
           try {
             setSendError("");
-            const result = await sendMessage(msg, "location", null, replyingTo?.id || null);
+            const result = await sendMessage(
+              msg,
+              "location",
+              null,
+              replyingTo?.id || null,
+            );
             if (result.success) {
               setReplyingTo(null);
             } else {
@@ -268,9 +281,11 @@ const Chat = () => {
         },
         (error) => {
           console.error("Error getting location: ", error);
-          setSendError("Gagal mendapatkan lokasi. Pastikan izin lokasi diaktifkan.");
+          setSendError(
+            "Gagal mendapatkan lokasi. Pastikan izin lokasi diaktifkan.",
+          );
           setTimeout(() => setSendError(""), 5000);
-        }
+        },
       );
     } else {
       setSendError("Geolocation tidak didukung di browser ini.");
@@ -1232,8 +1247,12 @@ const Chat = () => {
 
             {/* Compact Fast Action Bar */}
             <div className="px-3 py-1.5 bg-transparent z-20 flex gap-2 overflow-x-auto custom-scrollbar opacity-70 hover:opacity-100 transition-opacity">
-              <button onClick={handleSendLocation} className="flex items-center gap-1.5 px-3 py-1 bg-white/5 hover:bg-indigo-500/20 rounded-full text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-300 transition-colors border border-white/5 flex-shrink-0 cursor-pointer">
-                <MapPin size={10} />Send Location
+              <button
+                onClick={handleSendLocation}
+                className="flex items-center gap-1.5 px-3 py-1 bg-white/5 hover:bg-indigo-500/20 rounded-full text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-300 transition-colors border border-white/5 flex-shrink-0 cursor-pointer"
+              >
+                <MapPin size={10} />
+                Send Location
               </button>
               {replyingTo && (
                 <div className="flex items-center gap-2 px-3 py-1 bg-indigo-500/20 rounded-full text-[10px] font-bold uppercase tracking-widest text-indigo-300 border border-indigo-500/30 flex-shrink-0">
@@ -1360,10 +1379,8 @@ const Chat = () => {
                   </button>
                   <button
                     onClick={handleSendMessage}
-                    disabled={
-                      (!messageText.trim() && !mediaPreview) || loadingGlobal
-                    }
-                    className="w-9 h-9 flex items-center justify-center bg-indigo-500 hover:bg-indigo-400 rounded-xl text-white disabled:opacity-50 transition-all active:scale-90 shadow-lg shadow-indigo-500/20 flex-shrink-0"
+                    disabled={!messageText.trim() && !mediaPreview}
+                    className="w-9 h-9 flex items-center justify-center bg-indigo-500 hover:bg-indigo-400 rounded-xl text-white disabled:opacity-50 disabled:bg-slate-800 transition-all active:scale-90 shadow-lg shadow-indigo-500/20 flex-shrink-0"
                   >
                     <Send size={16} />
                   </button>
@@ -1446,7 +1463,11 @@ const Chat = () => {
               />
               <motion.div
                 animate={{ scale: [1, 1.3, 1], x: [0, 30, 0], y: [0, -30, 0] }}
-                transition={{ repeat: Infinity, duration: 20, ease: "easeInOut" }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 20,
+                  ease: "easeInOut",
+                }}
                 className="absolute bottom-[-10%] right-[-10%] w-[70vw] max-w-[600px] aspect-square bg-rose-500/15 blur-[120px] rounded-full"
               />
               <motion.div
@@ -1495,239 +1516,268 @@ const Chat = () => {
               <div className="flex-1 w-full flex flex-col gap-6">
                 {/* Intro Card */}
                 <div className="w-full backdrop-blur-2xl bg-[#0a0a0f]/80 border border-white/5 rounded-[32px] p-6 lg:p-10 shadow-2xl relative overflow-hidden group">
-                <div className="absolute -top-10 -right-10 opacity-5 pointer-events-none">
-                  <Globe className="w-64 h-64 text-indigo-500 animate-[spin_60s_linear_infinite]" />
-                </div>
-
-                <div className="flex justify-between items-start mb-6">
-                  <div className="flex items-center gap-4">
-                    {/* Icon Shield */}
-                    <div className="w-23 h-16 bg-white/[0.03] rounded-2xl flex items-center justify-center relative shadow-inner border border-white/5">
-                      <Shield
-                        size={28}
-                        className="text-indigo-400 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]"
-                      />
-                      <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] px-2 py-0.5 rounded shadow-lg uppercase font-black tracking-widest border border-white/20">
-                        V 2.5
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        console.log("Re-initializing Secure Node...");
-                        window.location.href =
-                          window.location.pathname + window.location.search;
-                      }}
-                      className="group/refresh w-25 h-12 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400 transition-all active:scale-90 shadow-lg shadow-indigo-500/5"
-                      title="Hard Refresh Node"
-                    >
-                      <RefreshCw
-                        size={20}
-                        className="group-hover/refresh:rotate-180 transition-transform duration-700 ease-in-out"
-                      />
-                      Refresh
-                    </button>
+                  <div className="absolute -top-10 -right-10 opacity-5 pointer-events-none">
+                    <Globe className="w-64 h-64 text-indigo-500 animate-[spin_60s_linear_infinite]" />
                   </div>
-                </div>
 
-                <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-3 tracking-tight text-white leading-tight">
-                  Global Encrypted
-                  <br />
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-emerald-400">
-                    Secure Network
-                  </span>
-                </h2>
-
-                <p className="text-slate-400 text-[13px] md:text-[14px] leading-relaxed mb-8 font-medium">
-                  Bypass conventional limits. Connect anonymously with users
-                  worldwide through military-grade secured nodes.
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {/* Grid Content Tetap Sama... */}
-                  <div className="bg-[#12121e]/80 border border-indigo-500/10 p-4 rounded-xl flex items-start gap-3 hover:bg-[#1a1a2e] transition-colors">
-                    <Lock
-                      size={16}
-                      className="text-emerald-400 mt-0.5 shrink-0"
-                    />
-                    <div>
-                      <div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">
-                        True E2E
-                      </div>
-                      <div className="text-[10px] text-slate-500 font-medium leading-relaxed">
-                        No logs. No traces. Total anonymity for your data.
-                      </div>
-                    </div>
-                  </div>
-                  <div className="bg-[#12121e]/80 border border-indigo-500/10 p-4 rounded-xl flex items-center justify-between gap-4 hover:bg-[#1a1a2e] transition-all group/card shadow-lg shadow-black/20">
-                    <div className="flex items-start gap-3">
-                      <div className="relative shrink-0 mt-1">
-                        <Menu
-                          size={16}
-                          className="text-indigo-400 group-hover/card:scale-110 transition-transform relative z-10"
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="flex items-center gap-4">
+                      {/* Icon Shield */}
+                      <div className="w-23 h-16 bg-white/[0.03] rounded-2xl flex items-center justify-center relative shadow-inner border border-white/5">
+                        <Shield
+                          size={28}
+                          className="text-indigo-400 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]"
                         />
-                        <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-full animate-pulse" />
+                        <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[8px] px-2 py-0.5 rounded shadow-lg uppercase font-black tracking-widest border border-white/20">
+                          V 2.5
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => {
+                          console.log("Re-initializing Secure Node...");
+                          window.location.href =
+                            window.location.pathname + window.location.search;
+                        }}
+                        className="group/refresh w-25 h-12 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400 transition-all active:scale-90 shadow-lg shadow-indigo-500/5"
+                        title="Hard Refresh Node"
+                      >
+                        <RefreshCw
+                          size={20}
+                          className="group-hover/refresh:rotate-180 transition-transform duration-700 ease-in-out"
+                        />
+                        Refresh
+                      </button>
+                    </div>
+                  </div>
+
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold mb-3 tracking-tight text-white leading-tight">
+                    Global Encrypted
+                    <br />
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-emerald-400">
+                      Secure Network
+                    </span>
+                  </h2>
+
+                  <p className="text-slate-400 text-[13px] md:text-[14px] leading-relaxed mb-8 font-medium">
+                    Bypass conventional limits. Connect anonymously with users
+                    worldwide through military-grade secured nodes.
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Grid Content Tetap Sama... */}
+                    <div className="bg-[#12121e]/80 border border-indigo-500/10 p-4 rounded-xl flex items-start gap-3 hover:bg-[#1a1a2e] transition-colors">
+                      <Lock
+                        size={16}
+                        className="text-emerald-400 mt-0.5 shrink-0"
+                      />
+                      <div>
+                        <div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">
+                          True E2E
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-medium leading-relaxed">
+                          No logs. No traces. Total anonymity for your data.
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-[#12121e]/80 border border-indigo-500/10 p-4 rounded-xl flex items-center justify-between gap-4 hover:bg-[#1a1a2e] transition-all group/card shadow-lg shadow-black/20">
+                      <div className="flex items-start gap-3">
+                        <div className="relative shrink-0 mt-1">
+                          <Menu
+                            size={16}
+                            className="text-indigo-400 group-hover/card:scale-110 transition-transform relative z-10"
+                          />
+                          <div className="absolute inset-0 bg-indigo-500/20 blur-md rounded-full animate-pulse" />
+                        </div>
+                        <div>
+                          <div className="text-[11px] font-black text-white uppercase tracking-[0.1em] mb-1 flex items-center gap-2">
+                            UI Recovery Assistant
+                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></span>
+                          </div>
+                          <div className="text-[10px] text-slate-400 font-bold leading-relaxed max-w-[200px] md:max-w-none">
+                            Jika{" "}
+                            <span className="text-indigo-300">Tombol Menu</span>{" "}
+                            menghilang pada tampilan mobile, silakan tekan
+                            tombol refresh untuk memulihkan navigasi.
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* TOMBOL REFRESH SEBAGAI FIX MENU */}
+                      <button
+                        onClick={() => window.location.reload()}
+                        className="flex-shrink-0 w-12 h-12 bg-indigo-600/10 hover:bg-indigo-600/30 border border-indigo-500/30 rounded-xl flex flex-col items-center justify-center text-indigo-400 transition-all active:scale-75 shadow-xl group/btn"
+                        title="Restore Navigation Menu"
+                      >
+                        <RefreshCw
+                          size={18}
+                          className="group-hover/btn:rotate-180 transition-transform duration-700 ease-in-out"
+                        />
+                        <span className="text-[7px] font-black mt-1 uppercase tracking-tighter text-indigo-300">
+                          Reload
+                        </span>
+                      </button>
+                    </div>
+                    <div className="bg-[#12121e]/80 border border-rose-500/10 p-4 rounded-xl flex items-start gap-3 hover:bg-[#1a1a2e] transition-colors">
+                      <EyeOff
+                        size={16}
+                        className="text-rose-400 mt-0.5 shrink-0"
+                      />
+                      <div>
+                        <div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">
+                          1x View Protocol
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-medium leading-relaxed">
+                          Photos vanish from servers after being viewed once.
+                        </div>
+                      </div>
+                    </div>
+                    <div className="bg-[#12121e]/80 border border-amber-500/10 p-4 rounded-xl flex items-start gap-3 sm:col-span-2 hover:bg-[#1a1a2e] transition-colors">
+                      <Zap
+                        size={16}
+                        className="text-amber-400 mt-0.5 shrink-0"
+                      />
+                      <div>
+                        <div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">
+                          Hyper Syne Sync
+                        </div>
+                        <div className="text-[10px] text-slate-500 font-medium leading-relaxed">
+                          Message latency reduced by realtime WebSocket
+                          tunneling across global regions.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* NEW: Interactive Status Widget */}
+                  <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
+                        <Radio
+                          className="text-indigo-400 animate-pulse"
+                          size={18}
+                        />
                       </div>
                       <div>
-                        <div className="text-[11px] font-black text-white uppercase tracking-[0.1em] mb-1 flex items-center gap-2">
-                          UI Recovery Assistant
-                          <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shadow-[0_0_8px_rgba(99,102,241,0.8)]"></span>
+                        <h4 className="text-xs font-bold text-white">
+                          System Status
+                        </h4>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                          <span className="text-[10px] text-emerald-400 font-semibold uppercase">
+                            All Systems Operational
+                          </span>
                         </div>
-                        <div className="text-[10px] text-slate-400 font-bold leading-relaxed max-w-[200px] md:max-w-none">
-                          Jika{" "}
-                          <span className="text-indigo-300">Tombol Menu</span>{" "}
-                          menghilang pada tampilan mobile, silakan tekan tombol
-                          refresh untuk memulihkan navigasi.
-                        </div>
                       </div>
                     </div>
-
-                    {/* TOMBOL REFRESH SEBAGAI FIX MENU */}
-                    <button
-                      onClick={() => window.location.reload()}
-                      className="flex-shrink-0 w-12 h-12 bg-indigo-600/10 hover:bg-indigo-600/30 border border-indigo-500/30 rounded-xl flex flex-col items-center justify-center text-indigo-400 transition-all active:scale-75 shadow-xl group/btn"
-                      title="Restore Navigation Menu"
-                    >
-                      <RefreshCw
-                        size={18}
-                        className="group-hover/btn:rotate-180 transition-transform duration-700 ease-in-out"
-                      />
-                      <span className="text-[7px] font-black mt-1 uppercase tracking-tighter text-indigo-300">
-                        Reload
-                      </span>
-                    </button>
-                  </div>
-                  <div className="bg-[#12121e]/80 border border-rose-500/10 p-4 rounded-xl flex items-start gap-3 hover:bg-[#1a1a2e] transition-colors">
-                    <EyeOff
-                      size={16}
-                      className="text-rose-400 mt-0.5 shrink-0"
-                    />
-                    <div>
-                      <div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">
-                        1x View Protocol
+                    <div className="text-right">
+                      <div className="text-xs text-slate-400 font-mono">
+                        Latency
                       </div>
-                      <div className="text-[10px] text-slate-500 font-medium leading-relaxed">
-                        Photos vanish from servers after being viewed once.
-                      </div>
+                      <div className="text-xs font-bold text-white">24ms</div>
                     </div>
                   </div>
-                  <div className="bg-[#12121e]/80 border border-amber-500/10 p-4 rounded-xl flex items-start gap-3 sm:col-span-2 hover:bg-[#1a1a2e] transition-colors">
-                    <Zap size={16} className="text-amber-400 mt-0.5 shrink-0" />
-                    <div>
-                      <div className="text-[11px] font-bold text-white uppercase tracking-wider mb-1">
-                        Hyper Syne Sync
-                      </div>
-                      <div className="text-[10px] text-slate-500 font-medium leading-relaxed">
-                        Message latency reduced by realtime WebSocket tunneling
-                        across global regions.
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* NEW: Interactive Status Widget */}
-                <div className="mt-6 p-4 rounded-2xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 border border-indigo-500/10 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/20">
-                      <Radio
-                        className="text-indigo-400 animate-pulse"
-                        size={18}
-                      />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-white">
-                        System Status
-                      </h4>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                        <span className="text-[10px] text-emerald-400 font-semibold uppercase">
-                          All Systems Operational
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-xs text-slate-400 font-mono">
-                      Latency
-                    </div>
-                    <div className="text-xs font-bold text-white">24ms</div>
-                  </div>
-                </div>
                 </div>
                 {/* QR Scanner Card below Intro Card */}
                 <QRScannerCard />
               </div>
 
-               {/* Right Quick Global Menu */}
-<div className="w-full md:w-80 backdrop-blur-3xl bg-[#12121e]/60 border border-white/5 rounded-[32px] flex flex-col shadow-2xl overflow-hidden h-[450px] shrink-0 border-t border-t-indigo-500/20">
-  <div className="p-4 border-b border-white/5 flex justify-between items-center bg-black/40 relative">
-    <div className="flex items-center gap-2">
-      <Globe size={16} className="text-indigo-400" />
-      <div>
-        <h3 className="font-bold text-white text-[13px]">Global Relay Nodes</h3>
-        <p className="text-[9px] text-emerald-400 font-bold tracking-widest uppercase mt-0.5">Live Feed • Top 15</p>
-      </div>
-    </div>
-    <span className="flex h-2 w-2 relative rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse"></span>
-  </div>
-  
-  {/* NEW: Animated Tips Ticker */}
-  <div className="bg-indigo-500/5 py-2 px-3 border-b border-white/5 overflow-hidden">
-    <motion.div 
-      animate={{ x: ['0%', '-100%'] }} 
-      transition={{ repeat: Infinity, duration: 20, ease: 'linear' }} 
-      className="flex whitespace-nowrap"
-    >
-      <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4"><Sparkles size={10} className="text-yellow-400"/> Tip: Click a user to start a secure session.</span>
-      <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4"><Lock size={10} className="text-emerald-400"/> Tip: Messages are deleted after 1 hour for privacy.</span>
-      <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4"><Shield size={10} className="text-rose-400"/> Tip: Use 1x View for sensitive photos.</span>
-    </motion.div>
-  </div>
+              {/* Right Quick Global Menu */}
+              <div className="w-full md:w-80 backdrop-blur-3xl bg-[#12121e]/60 border border-white/5 rounded-[32px] flex flex-col shadow-2xl overflow-hidden h-[450px] shrink-0 border-t border-t-indigo-500/20">
+                <div className="p-4 border-b border-white/5 flex justify-between items-center bg-black/40 relative">
+                  <div className="flex items-center gap-2">
+                    <Globe size={16} className="text-indigo-400" />
+                    <div>
+                      <h3 className="font-bold text-white text-[13px]">
+                        Global Relay Nodes
+                      </h3>
+                      <p className="text-[9px] text-emerald-400 font-bold tracking-widest uppercase mt-0.5">
+                        Live Feed • Top 15
+                      </p>
+                    </div>
+                  </div>
+                  <span className="flex h-2 w-2 relative rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse"></span>
+                </div>
 
-  <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
-    {loadingGlobal ? (
-      <div className="flex justify-center items-center h-full">
-        <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    ) : globalUsers.length === 0 ? (
-      <div className="p-6 text-center text-slate-500 text-[11px] uppercase tracking-widest">Awaiting Nodes</div>
-    ) : (
-      <div className="flex flex-col gap-1">
-        {globalUsers.map((gUser, i) => (
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }} 
-            animate={{ opacity: 1, x: 0 }} 
-            transition={{ delay: 0.1 + (i * 0.05) }} 
-            key={gUser.id}
-            onClick={() => handleStartConversation(gUser)}
-            className="flex items-center gap-3 p-2.5 rounded-2xl bg-white/[0.01] hover:bg-indigo-500/20 border border-transparent hover:border-indigo-500/30 cursor-pointer transition-all hover:scale-[1.02] group"
-          >
-            <div className="relative">
-              <img 
-                /* Logic Fallback Avatar agar tidak pernah kosong */
-                src={gUser.avatar_url && gUser.avatar_url !== '' 
-                  ? gUser.avatar_url 
-                  : `https://api.dicebear.com/7.x/initials/svg?seed=${gUser.username}`
-                } 
-                className="w-10 h-10 rounded-[14px] object-cover ring-1 ring-white/10 group-hover:ring-indigo-500/50 transition-all" 
-              />
-              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-[#12121e] ${gUser.is_online ? 'bg-emerald-400 shadow-[0_0_8px_#10b981]' : 'bg-slate-500'}`} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-bold text-white text-[13px] truncate flex items-center gap-1 group-hover:text-indigo-300 transition-colors">
-                {gUser.username} 
-                {gUser.role === 'owner' && <span className="bg-pink-500/20 text-pink-400 text-[8px] px-1 py-[1px] rounded uppercase font-black tracking-tighter">Admin</span>}
+                {/* NEW: Animated Tips Ticker */}
+                <div className="bg-indigo-500/5 py-2 px-3 border-b border-white/5 overflow-hidden">
+                  <motion.div
+                    animate={{ x: ["0%", "-100%"] }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 20,
+                      ease: "linear",
+                    }}
+                    className="flex whitespace-nowrap"
+                  >
+                    <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4">
+                      <Sparkles size={10} className="text-yellow-400" /> Tip:
+                      Click a user to start a secure session.
+                    </span>
+                    <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4">
+                      <Lock size={10} className="text-emerald-400" /> Tip:
+                      Messages are deleted after 1 hour for privacy.
+                    </span>
+                    <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4">
+                      <Shield size={10} className="text-rose-400" /> Tip: Use 1x
+                      View for sensitive photos.
+                    </span>
+                  </motion.div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
+                  {loadingGlobal ? (
+                    <div className="flex justify-center items-center h-full">
+                      <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  ) : globalUsers.length === 0 ? (
+                    <div className="p-6 text-center text-slate-500 text-[11px] uppercase tracking-widest">
+                      Awaiting Nodes
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-1">
+                      {globalUsers.map((gUser, i) => (
+                        <motion.div
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.1 + i * 0.05 }}
+                          key={gUser.id}
+                          onClick={() => handleStartConversation(gUser)}
+                          className="flex items-center gap-3 p-2.5 rounded-2xl bg-white/[0.01] hover:bg-indigo-500/20 border border-transparent hover:border-indigo-500/30 cursor-pointer transition-all hover:scale-[1.02] group"
+                        >
+                          <div className="relative">
+                            <img
+                              /* Logic Fallback Avatar agar tidak pernah kosong */
+                              src={
+                                gUser.avatar_url && gUser.avatar_url !== ""
+                                  ? gUser.avatar_url
+                                  : `https://api.dicebear.com/7.x/initials/svg?seed=${gUser.username}`
+                              }
+                              className="w-10 h-10 rounded-[14px] object-cover ring-1 ring-white/10 group-hover:ring-indigo-500/50 transition-all"
+                            />
+                            <div
+                              className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-[#12121e] ${gUser.is_online ? "bg-emerald-400 shadow-[0_0_8px_#10b981]" : "bg-slate-500"}`}
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold text-white text-[13px] truncate flex items-center gap-1 group-hover:text-indigo-300 transition-colors">
+                              {gUser.username}
+                              {gUser.role === "owner" && (
+                                <span className="bg-pink-500/20 text-pink-400 text-[8px] px-1 py-[1px] rounded uppercase font-black tracking-tighter">
+                                  Admin
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[9px] text-indigo-300/60 font-bold font-mono tracking-widest mt-1 bg-black/40 px-1 inline-block rounded border border-white/5">
+                              {gUser.unique_id}
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="text-[9px] text-indigo-300/60 font-bold font-mono tracking-widest mt-1 bg-black/40 px-1 inline-block rounded border border-white/5">
-                {gUser.unique_id}
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    )}
-  </div>
-</div>
             </motion.div>
           </div>
         )}
