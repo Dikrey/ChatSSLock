@@ -391,7 +391,7 @@ const Chat = () => {
     if (msg.sender_id !== user?.id) return false;
     if (msg.message_type !== "text") return false;
     if (msg.is_deleted) return false;
-    return Date.now() - new Date(msg.created_at).getTime() < 60000;
+    return Date.now() - new Date(msg.created_at).getTime() < 600000;
   };
 
   const handleEditMessage = (message) => {
@@ -1857,7 +1857,7 @@ const Chat = () => {
                       Edit Pesan
                     </h3>
                     <p className="text-[10px] text-slate-500 mt-0.5 uppercase tracking-widest font-semibold">
-                      Dapat diedit dalam 1 menit pertama
+                      Dapat diedit dalam 10 menit pertama
                     </p>
                   </div>
                 </div>
