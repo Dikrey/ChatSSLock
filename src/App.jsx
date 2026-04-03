@@ -6,6 +6,7 @@ import Chat from './pages/Chat';
 import Banned from './pages/Banned';
 import OwnerDashboard from './pages/OwnerDashboard';
 import NotFound from './pages/NotFound';
+import UserProfile from './pages/UserProfile';
 import './index.css';
 
 const ProtectedRoute = ({ children }) => {
@@ -53,6 +54,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <OwnerDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/user/:unique_id"
+        element={
+          <ProtectedRoute>
+            <UserProfile />
           </ProtectedRoute>
         }
       />

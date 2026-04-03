@@ -14,9 +14,13 @@
     "date-fns": "^4.1.0",
     "emoji-picker-react": "^4.18.0",
     "framer-motion": "^12.34.3",
+    "html-to-image": "^1.11.13",
+    "html5-qrcode": "^2.3.8",
+    "jsqr": "^1.4.0",
     "lucide-react": "^0.575.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-qr-code": "^2.0.18",
     "react-router-dom": "^7.13.1",
     "recharts": "^3.7.0"
   },
