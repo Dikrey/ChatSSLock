@@ -41,7 +41,7 @@ const Chat = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [editModal, setEditModal] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
-  
+  const [showViewOnceHint, setShowViewOnceHint] = useState(false);
   // New State for Copy Feature
   const [copiedId, setCopiedId] = useState(null);
 
@@ -79,19 +79,19 @@ const Chat = () => {
   }, [user, currentConversation, getAllUsers]);
 
   useEffect(() => {
-    const handleResize = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
-      if (mobile) {
-        setShowSidebar(false);
-      } else {
-        setShowSidebar(true);
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const handleResize = () => {
+    const mobile = window.innerWidth < 768;
+    setIsMobile(mobile);
+    
+    if (!mobile) {
+      setShowSidebar(true);
+    }
+  };
+  handleResize(); 
+
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
 
   const formatMessageTime = (date) => {
     const msgDate = new Date(date);
@@ -245,15 +245,33 @@ const Chat = () => {
   };
 
   const handleStartConversation = async (searchedUser) => {
-    const result = await getOrCreateConversation(searchedUser.id);
+  try {
+    const { data: latestUserData, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', searchedUser.id)
+      .single();
+
+    if (userError) throw userError;
+    const result = await getOrCreateConversation(latestUserData.id);
+    
     if (result.success) {
-      selectConversation(result.conversation);
+
+      const updatedConversation = {
+        ...result.conversation,
+        otherUser: latestUserData 
+      };
+
+      selectConversation(updatedConversation);
       setSearchQuery('');
       setSearchResults([]);
+      
       if (isMobile) setShowSidebar(false);
     }
-  };
-
+  } catch (error) {
+    console.error("Link re-initialization failed:", error.message);
+  }
+};
   const canEdit = (msg) => {
     if (msg.sender_id !== user?.id) return false;
     if (msg.message_type !== 'text') return false;
@@ -516,7 +534,7 @@ const Chat = () => {
             </div>
 
             {/* Chat Header */}
-            {/* Chat Header - Versi Turun Maksimal untuk Mobile */}
+   
 <div className="px-3 md:px-5 pt-16 pb-4 md:py-3 bg-[#0a0a10]/95 backdrop-blur-xl border-b border-indigo-500/10 flex items-center justify-between gap-2 z-20 shadow-md sticky top-0">
   
   <div className="flex items-center gap-2 mt-3 md:mt-0"> {/* mt-2 untuk tambahan jarak internal */}
@@ -589,35 +607,88 @@ const Chat = () => {
                 <motion.div key={message.id} initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: i * 0.02, ease: "easeOut" }} className={`flex gap-2 w-full max-w-[90%] md:max-w-2xl group ${message.sender_id === user.id ? 'self-end flex-row-reverse' : 'self-start'}`}>
                   {message.sender_id !== user.id && <img src={message.sender?.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${message.sender?.username}`} alt={message.sender?.username} className="w-7 h-7 md:w-8 md:h-8 rounded-[10px] object-cover self-end mb-1 shadow-md flex-shrink-0 ring-1 ring-white/10" />}
                   
-                  <div className={`p-3 md:p-3.5 rounded-[20px] relative backdrop-blur-md shadow-lg transition-transform hover:scale-[1.01] flex flex-col ${message.sender_id === user.id ? 'bg-indigo-600/90 rounded-br-[6px] text-white shadow-indigo-600/20 border border-indigo-500/50' : 'bg-[#1a1a24]/90 border border-white/5 rounded-bl-[6px] text-slate-200'}`}>
-                    
-                    {/* Quick actions popup */}
-                    <div className={`absolute top-1/2 -translate-y-1/2 ${message.sender_id === user.id ? '-left-[6.5rem]' : '-right-[6.5rem]'} opacity-0 group-hover:opacity-100 transition-all flex items-center gap-1`}>
-                      {/* Copy Button */}
-                      <button onClick={() => handleCopy(message.content, message.id)} className="w-7 h-7 rounded-xl bg-white/10 hover:bg-emerald-500/30 flex items-center justify-center text-slate-300 backdrop-blur-md shadow-lg transition-colors">
-                        {copiedId === message.id ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
-                      </button>
-                      <button onClick={() => setReplyingTo(message)} className="w-7 h-7 rounded-xl bg-white/10 hover:bg-indigo-500/30 flex items-center justify-center text-slate-300 backdrop-blur-md shadow-lg transition-colors"><Reply size={11} /></button>
-                      {canEdit(message) && (
-                        <button onClick={() => handleEditMessage(message)} className="w-7 h-7 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/50 flex items-center justify-center text-indigo-300 backdrop-blur-md shadow-lg transition-colors"><Edit3 size={11} /></button>
-                      )}
-                      {message.sender_id === user.id && !message.is_deleted && (
-                        <button onClick={() => handleDeleteMessage(message)} className="w-7 h-7 rounded-xl bg-red-500/20 hover:bg-red-500/50 flex items-center justify-center text-red-300 backdrop-blur-md shadow-lg transition-colors"><Trash2 size={11} /></button>
-                      )}
-                    </div>
-                    
-                    {message.sender_id !== user.id && <div className="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-1">{message.sender?.username}</div>}
-                    <div className="text-[13px] md:text-[14px] leading-relaxed break-words font-medium">{renderMessageContent(message)}</div>
-                    
-                    <div className={`flex items-center justify-end gap-1 mt-1 text-[9px] md:text-[10px] font-bold tracking-widest ${message.sender_id === user.id ? 'text-indigo-200/70' : 'text-slate-500'}`}>
-                      <span>{formatMessageTime(message.created_at)}</span>
-                      {message.is_edited && <span className="opacity-60">• edited</span>}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-              <div ref={messagesEndRef} className="pb-1" />
-            </div>
+                  <div className={`p-3 md:p-3.5 rounded-[20px] relative backdrop-blur-md shadow-lg transition-transform flex flex-col ${message.sender_id === user.id ? 'bg-indigo-600/90 rounded-br-[6px] text-white border border-indigo-500/50' : 'bg-[#1a1a24]/90 border border-white/5 rounded-bl-[6px] text-slate-200'}`}>
+                  {message.reply_to && (
+    <div 
+      className={`mb-2 p-2 rounded-xl border-l-4 text-[11px] cursor-pointer group/reply ${
+        message.sender_id === user.id 
+        ? 'bg-black/20 border-indigo-300' 
+        : 'bg-white/5 border-indigo-500'
+      }`}
+      onClick={() => {
+        const target = document.getElementById(`msg-${message.reply_to}`);
+        target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }}
+    >
+      <div className="font-bold text-indigo-400 text-[9px] uppercase tracking-tighter">
+        Replying to message
+      </div>
+      <div className="truncate opacity-60 line-clamp-1">
+        {messages.find(m => m.id === message.reply_to)?.content || "Media content"}
+      </div>
+    </div>
+  )}
+
+
+        
+        {/* Quick actions popup - Adjusted Spacing */}
+<div className={`
+  absolute top-1/2 -translate-y-1/2 flex items-center gap-1.5 transition-all duration-300 z-[40]
+  ${message.sender_id === user.id 
+    ? '-left-[9.8rem] md:-left-[11rem]' // Pesan kita: Geser lebih ke KIRI (menjauh dari bubble)
+    : '-right-[5.8rem] md:-right-[7.5rem]' // Pesan orang: Geser lebih ke KANAN
+  }
+  ${isMobile ? 'opacity-100 visible' : 'opacity-0 invisible group-hover:opacity-100 group-hover:visible'}
+`}>
+  {/* Copy Button */}
+  <button 
+    onClick={(e) => { e.stopPropagation(); handleCopy(message.content, message.id); }} 
+    className="w-7.5 h-7.5 rounded-lg bg-[#0a0a10]/90 md:bg-white/10 flex items-center justify-center text-slate-300 backdrop-blur-xl border border-white/10 shadow-[0_4px_15px_rgba(0,0,0,0.4)] active:scale-90 transition-transform"
+  >
+    {copiedId === message.id ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+  </button>
+  
+  {/* Reply Button */}
+  <button 
+    onClick={(e) => { e.stopPropagation(); setReplyingTo(message); }} 
+    className="w-7.5 h-7.5 rounded-lg bg-[#0a0a10]/90 md:bg-white/10 flex items-center justify-center text-slate-300 backdrop-blur-xl border border-white/10 shadow-[0_4px_15px_rgba(0,0,0,0.4)] active:scale-90 transition-transform"
+  >
+    <Reply size={11} />
+  </button>
+
+  {/* Edit Button */}
+  {canEdit(message) && (
+    <button 
+      onClick={(e) => { e.stopPropagation(); handleEditMessage(message); }} 
+      className="w-7.5 h-7.5 rounded-lg bg-indigo-600/40 flex items-center justify-center text-indigo-100 border border-indigo-400/30 shadow-lg active:scale-90 transition-transform"
+    >
+      <Edit3 size={11} />
+    </button>
+  )}
+
+  {/* Delete Button */}
+  {message.sender_id === user.id && !message.is_deleted && (
+    <button 
+      onClick={(e) => { e.stopPropagation(); handleDeleteMessage(message); }} 
+      className="w-7.5 h-7.5 rounded-lg bg-red-600/40 flex items-center justify-center text-red-100 border border-red-400/30 shadow-lg active:scale-90 transition-transform"
+    >
+      <Trash2 size={11} />
+    </button>
+  )}
+</div>
+        
+        {message.sender_id !== user.id && <div className="text-[10px] font-black text-indigo-300 uppercase tracking-widest mb-1">{message.sender?.username}</div>}
+        <div className="text-[13px] md:text-[14px] leading-relaxed break-words font-medium">{renderMessageContent(message)}</div>
+        
+        <div className={`flex items-center justify-end gap-1 mt-1 text-[9px] md:text-[10px] font-bold tracking-widest ${message.sender_id === user.id ? 'text-indigo-200/70' : 'text-slate-500'}`}>
+          <span>{formatMessageTime(message.created_at)}</span>
+          {message.is_edited && <span className="opacity-60">• edited</span>}
+        </div>
+      </div>
+    </motion.div>
+  ))}
+  <div ref={messagesEndRef} className="pb-1" />
+</div>
 
             {/* Compact Fast Action Bar */}
             <div className="px-3 py-1.5 bg-transparent z-20 flex gap-2 overflow-x-auto custom-scrollbar opacity-70 hover:opacity-100 transition-opacity">
@@ -646,38 +717,92 @@ const Chat = () => {
 
             {sendError && <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-red-500 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(239,68,68,0.5)] z-50 whitespace-nowrap animate-bounce">{sendError}</div>}
             
-            {/* Input Form Wrapper - MOVED UP SLIGHTLY FOR MOBILE */}
-            <div className="p-2 md:p-3 pb-2 md:pb-3 bg-[#0a0a10]/95 backdrop-blur-xl border-t border-white/5 relative z-20 w-full mb-0">
-              <div className="max-w-5xl mx-auto flex items-end gap-1 md:gap-2 bg-[#14141e] border border-white/5 rounded-2xl md:rounded-[20px] p-1 shadow-inner focus-within:ring-1 focus-within:ring-indigo-500/50 transition-all">
-                
-                <div className="flex gap-0 pb-1 pl-1">
-                  <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-indigo-400 hover:text-indigo-300 hover:bg-white/5 rounded-full transition-colors flex-shrink-0"><Smile size={18} /></button>
-                  <button onClick={() => fileInputRef.current?.click()} className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center text-slate-400 hover:text-indigo-300 hover:bg-white/5 rounded-full transition-colors flex-shrink-0"><Image size={18} /></button>
-                </div>
-                
-                <textarea 
-                  rows={messageText.split('\n').length > 3 ? 3 : messageText.split('\n').length || 1}
-                  placeholder="Type message..." 
-                  value={messageText} 
-                  onChange={(e) => setMessageText(e.target.value)} 
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) { 
-                      e.preventDefault(); 
-                      handleSendMessage(); 
-                    }
-                  }} 
-                  className="flex-1 bg-transparent text-[13px] md:text-[14px] font-medium text-slate-200 placeholder:text-slate-600 outline-none resize-none py-2 md:py-2.5 min-h-[36px] max-h-[80px] custom-scrollbar overflow-y-auto" 
-                />
-                
-                <div className="flex items-center gap-1 pb-1 pr-1">
-                  <button onClick={() => setIsViewOnce(!isViewOnce)} className={`h-8 md:h-9 px-2 flex items-center gap-1 justify-center rounded-xl text-[10px] font-black tracking-wider transition-colors border flex-shrink-0 ${isViewOnce ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : 'text-slate-500 border-transparent hover:bg-white/5 hover:text-slate-300'}`} title="1x View">
-                     <EyeOff size={14}/> <span className="hidden sm:inline">1x</span>
-                  </button>
-                  
-                  <button onMouseDown={startRecording} onMouseUp={stopRecording} onMouseLeave={stopRecording} className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full transition-all border flex-shrink-0 ${isRecording ? 'bg-red-500 text-white border-red-500 animate-pulse' : 'text-slate-400 border-transparent hover:text-red-400 hover:bg-white/5'}`}><Mic size={16} /></button>
-                  <button onClick={handleSendMessage} disabled={(!messageText.trim() && !mediaPreview) || loadingGlobal} className="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center bg-indigo-500 hover:bg-indigo-400 rounded-[12px] text-white disabled:opacity-50 disabled:grayscale transition-transform active:scale-95 shadow-md shadow-indigo-500/30 flex-shrink-0"><Send size={15} className="translate-x-[1px]" /></button>
-                </div>
-              </div>
+          {/* Input Form Wrapper - FIXED FOR MOBILE BOTTOM */}
+<div className="px-2 md:px-4 py-2 md:py-3 bg-[#0a0a10]/95 backdrop-blur-xl border-t border-white/5 relative z-20 w-full safe-bottom">
+  <div className="max-w-5xl mx-auto flex items-end gap-1 md:gap-2 bg-[#14141e] border border-white/5 rounded-[20px] md:rounded-[24px] p-1 shadow-2xl focus-within:ring-1 focus-within:ring-indigo-500/50 transition-all">
+    
+    <div className="flex gap-0.5 pb-1 pl-1">
+      <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="w-9 h-9 flex items-center justify-center text-indigo-400 hover:bg-white/5 rounded-full transition-colors flex-shrink-0"><Smile size={20} /></button>
+      <button onClick={() => fileInputRef.current?.click()} className="w-9 h-9 flex items-center justify-center text-slate-400 hover:bg-white/5 rounded-full transition-colors flex-shrink-0"><Image size={20} /></button>
+    </div>
+    
+    <textarea 
+      rows={1}
+      style={{ height: 'auto' }}
+      placeholder="Type message..." 
+      value={messageText} 
+      onChange={(e) => setMessageText(e.target.value)} 
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { 
+          e.preventDefault(); 
+          handleSendMessage(); 
+        }
+      }} 
+      className="flex-1 bg-transparent text-[14px] md:text-[15px] font-medium text-slate-200 placeholder:text-slate-600 outline-none resize-none py-2.5 max-h-[120px] custom-scrollbar overflow-y-auto" 
+    />
+    
+    <div className="flex items-center gap-1 pb-1 pr-1">
+      <button 
+  onClick={() => {
+    const newState = !isViewOnce;
+    setIsViewOnce(newState);
+    if (newState) {
+      setShowViewOnceHint(true);
+      // Popup otomatis hilang setelah 4 detik
+      setTimeout(() => setShowViewOnceHint(false), 4000);
+    }
+  }} 
+  className={`h-9 px-2.5 flex items-center gap-1.5 justify-center rounded-xl text-[10px] font-black tracking-wider transition-colors border flex-shrink-0 ${isViewOnce ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' : 'text-slate-500 border-transparent hover:bg-white/5'}`}
+  title="1x View"
+>
+    <EyeOff size={14}/> <span className="hidden sm:inline">1x</span>
+</button>
+      
+      <button onMouseDown={startRecording} onMouseUp={stopRecording} onMouseLeave={stopRecording} className={`w-9 h-9 flex items-center justify-center rounded-full transition-all border flex-shrink-0 ${isRecording ? 'bg-red-500 text-white border-red-500 animate-pulse' : 'text-slate-400 border-transparent hover:text-red-400'}`}><Mic size={18} /></button>
+      <button onClick={handleSendMessage} disabled={(!messageText.trim() && !mediaPreview) || loadingGlobal} className="w-9 h-9 flex items-center justify-center bg-indigo-500 hover:bg-indigo-400 rounded-xl text-white disabled:opacity-50 transition-all active:scale-90 shadow-lg shadow-indigo-500/20 flex-shrink-0"><Send size={16} /></button>
+    </div>
+  </div>
+
+<AnimatePresence>
+  {showViewOnceHint && (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-sm"
+    >
+      <div className="bg-[#0f0f1a]/95 backdrop-blur-2xl border border-rose-500/30 p-4 rounded-[24px] shadow-[0_10px_40px_rgba(225,29,72,0.2)] relative overflow-hidden">
+        {/* Glow Decoration */}
+        <div className="absolute -top-10 -right-10 w-20 h-20 bg-rose-500/10 blur-2xl rounded-full" />
+        
+        <div className="flex items-start gap-4 relative z-10">
+          <div className="w-10 h-10 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-500 shrink-0 border border-rose-500/20">
+            <EyeOff size={20} />
+          </div>
+          <div>
+            <h4 className="text-white font-black text-xs uppercase tracking-widest mb-1">
+              View-Once Protocol Active
+            </h4>
+            <p className="text-slate-400 text-[11px] leading-relaxed font-medium">
+              Pesan 1x lihat telah diaktifkan. Anda dapat mengirim foto yang akan <span className="text-rose-400 font-bold">langsung terhapus</span> dari node jaringan setelah dilihat oleh penerima.
+            </p>
+            <div className="mt-3 pt-3 border-t border-white/5 flex justify-between items-center">
+              <span className="text-[8px] font-mono text-indigo-400/60 tracking-tighter uppercase">
+                Secured by Raihan_Official0307 × Visualcodepo
+              </span>
+              <button 
+                onClick={() => setShowViewOnceHint(false)}
+                className="text-[9px] font-black text-rose-400 uppercase tracking-widest hover:text-rose-300"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
               
               <AnimatePresence>
                 {showEmojiPicker && (
@@ -689,7 +814,7 @@ const Chat = () => {
             </div>
           </div>
         ) : (
-          // HOME SCREEN / EMPTY STATE
+          
           <div className="flex-1 flex flex-col items-center justify-start md:justify-center p-4 md:p-6 relative z-10 bg-[#050508] w-full min-h-[100dvh] overflow-y-auto custom-scrollbar pt-28 pb-10 md:pt-0">
 
             {/* Elaborate Animated Background */}
@@ -814,58 +939,76 @@ const Chat = () => {
                   </div>
                </div>
 
-               {/* Right Quick Global Menu */}
-               <div className="w-full md:w-80 backdrop-blur-3xl bg-[#12121e]/60 border border-white/5 rounded-[32px] flex flex-col shadow-2xl overflow-hidden h-[450px] shrink-0 border-t border-t-indigo-500/20">
-                  <div className="p-4 border-b border-white/5 flex justify-between items-center bg-black/40 relative">
-                     <div className="flex items-center gap-2">
-                       <Globe size={16} className="text-indigo-400" />
-                       <div>
-                         <h3 className="font-bold text-white text-[13px]">Global Relay Nodes</h3>
-                         <p className="text-[9px] text-emerald-400 font-bold tracking-widest uppercase mt-0.5">Live Feed • Top 15</p>
-                       </div>
-                     </div>
-                     <span className="flex h-2 w-2 relative rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse"></span>
-                  </div>
-                  
-                  {/* NEW: Animated Tips Ticker */}
-                  <div className="bg-indigo-500/5 py-2 px-3 border-b border-white/5 overflow-hidden">
-                      <motion.div 
-                        animate={{ x: ['0%', '-100%'] }} 
-                        transition={{ repeat: Infinity, duration: 20, ease: 'linear' }} 
-                        className="flex whitespace-nowrap"
-                      >
-                          <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4"><Sparkles size={10} className="text-yellow-400"/> Tip: Click a user to start a secure session.</span>
-                          <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4"><Lock size={10} className="text-emerald-400"/> Tip: Messages are deleted after 1 hour for privacy.</span>
-                          <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4"><Shield size={10} className="text-rose-400"/> Tip: Use 1x View for sensitive photos.</span>
-                      </motion.div>
-                  </div>
+              {/* Right Quick Global Menu */}
+<div className="w-full md:w-80 backdrop-blur-3xl bg-[#12121e]/60 border border-white/5 rounded-[32px] flex flex-col shadow-2xl overflow-hidden h-[450px] shrink-0 border-t border-t-indigo-500/20">
+  <div className="p-4 border-b border-white/5 flex justify-between items-center bg-black/40 relative">
+    <div className="flex items-center gap-2">
+      <Globe size={16} className="text-indigo-400" />
+      <div>
+        <h3 className="font-bold text-white text-[13px]">Global Relay Nodes</h3>
+        <p className="text-[9px] text-emerald-400 font-bold tracking-widest uppercase mt-0.5">Live Feed • Top 15</p>
+      </div>
+    </div>
+    <span className="flex h-2 w-2 relative rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse"></span>
+  </div>
+  
+  {/* NEW: Animated Tips Ticker */}
+  <div className="bg-indigo-500/5 py-2 px-3 border-b border-white/5 overflow-hidden">
+    <motion.div 
+      animate={{ x: ['0%', '-100%'] }} 
+      transition={{ repeat: Infinity, duration: 20, ease: 'linear' }} 
+      className="flex whitespace-nowrap"
+    >
+      <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4"><Sparkles size={10} className="text-yellow-400"/> Tip: Click a user to start a secure session.</span>
+      <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4"><Lock size={10} className="text-emerald-400"/> Tip: Messages are deleted after 1 hour for privacy.</span>
+      <span className="text-[10px] text-indigo-300 font-medium flex items-center gap-2 mx-4"><Shield size={10} className="text-rose-400"/> Tip: Use 1x View for sensitive photos.</span>
+    </motion.div>
+  </div>
 
-                  <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
-                     {loadingGlobal ? (
-                       <div className="flex justify-center items-center h-full"><div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div></div>
-                     ) : globalUsers.length === 0 ? (
-                       <div className="p-6 text-center text-slate-500 text-[11px] uppercase tracking-widest">Awaiting Nodes</div>
-                     ) : (
-                       <div className="flex flex-col gap-1">
-                         {globalUsers.map((gUser, i) => (
-                           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 + (i * 0.05) }} key={gUser.id}
-                             onClick={() => handleStartConversation(gUser)}
-                             className="flex items-center gap-3 p-2.5 rounded-2xl bg-white/[0.01] hover:bg-indigo-500/20 border border-transparent hover:border-indigo-500/30 cursor-pointer transition-all hover:scale-[1.02]"
-                           >
-                             <div className="relative">
-                               <img src={gUser.avatar_url || `https://api.dicebear.com/7.x/initials/svg?seed=${gUser.username}`} className="w-10 h-10 rounded-[14px] object-cover ring-1 ring-white/10" />
-                               <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-[#12121e] ${gUser.is_online ? 'bg-emerald-400' : 'bg-slate-500'}`} />
-                             </div>
-                             <div className="flex-1 min-w-0">
-                                <div className="font-bold text-white text-[13px] truncate flex items-center gap-1">{gUser.username} {gUser.role === 'owner' && <span className="bg-pink-500/20 text-pink-400 text-[8px] px-1 py-[1px] rounded uppercase font-black">Owner</span>}</div>
-                                <div className="text-[9px] text-indigo-300 font-bold font-mono tracking-widest mt-1 bg-black/40 px-1 inline-block rounded border border-white/5">{gUser.unique_id}</div>
-                             </div>
-                           </motion.div>
-                         ))}
-                       </div>
-                     )}
-                  </div>
-               </div>
+  <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
+    {loadingGlobal ? (
+      <div className="flex justify-center items-center h-full">
+        <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    ) : globalUsers.length === 0 ? (
+      <div className="p-6 text-center text-slate-500 text-[11px] uppercase tracking-widest">Awaiting Nodes</div>
+    ) : (
+      <div className="flex flex-col gap-1">
+        {globalUsers.map((gUser, i) => (
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }} 
+            animate={{ opacity: 1, x: 0 }} 
+            transition={{ delay: 0.1 + (i * 0.05) }} 
+            key={gUser.id}
+            onClick={() => handleStartConversation(gUser)}
+            className="flex items-center gap-3 p-2.5 rounded-2xl bg-white/[0.01] hover:bg-indigo-500/20 border border-transparent hover:border-indigo-500/30 cursor-pointer transition-all hover:scale-[1.02] group"
+          >
+            <div className="relative">
+              <img 
+                /* Logic Fallback Avatar agar tidak pernah kosong */
+                src={gUser.avatar_url && gUser.avatar_url !== '' 
+                  ? gUser.avatar_url 
+                  : `https://api.dicebear.com/7.x/initials/svg?seed=${gUser.username}`
+                } 
+                className="w-10 h-10 rounded-[14px] object-cover ring-1 ring-white/10 group-hover:ring-indigo-500/50 transition-all" 
+              />
+              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-[#12121e] ${gUser.is_online ? 'bg-emerald-400 shadow-[0_0_8px_#10b981]' : 'bg-slate-500'}`} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-bold text-white text-[13px] truncate flex items-center gap-1 group-hover:text-indigo-300 transition-colors">
+                {gUser.username} 
+                {gUser.role === 'owner' && <span className="bg-pink-500/20 text-pink-400 text-[8px] px-1 py-[1px] rounded uppercase font-black tracking-tighter">Admin</span>}
+              </div>
+              <div className="text-[9px] text-indigo-300/60 font-bold font-mono tracking-widest mt-1 bg-black/40 px-1 inline-block rounded border border-white/5">
+                {gUser.unique_id}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
             </motion.div>
           </div>
         )}
@@ -993,6 +1136,22 @@ const Chat = () => {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+  }
+    .safe-bottom {
+    /* env(safe-area-inset-bottom) akan memberikan jarak hanya jika HP memiliki home bar */
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+  }
+
+  @media (max-width: 768px) {
+    /* Pastikan container chat mengisi penuh layar tanpa sisa */
+    .main-viewport {
+      height: 100dvh !important;
+    }
+    
+    /* Menghilangkan padding yang tidak perlu di mobile wrapper */
+    .pb-2.md:pb-3 {
+      padding-bottom: 0px !important;
+    }
   }
 `}</style>
 
